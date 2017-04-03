@@ -67,6 +67,23 @@ pub struct XmlData {
     pub sub_elements: Vec<XmlData>
 }
 
+
+use std::mem;
+
+impl Drop for XmlData {
+    fn drop(&mut self) {
+        let mut children = mem::replace(&mut self.sub_elements, vec![]);
+
+        for mut sub in children {
+            if sub.sub_elements.len() > 0{
+		mem::replace(&mut sub.sub_elements, vec![]);
+	    }else{
+		break;
+            }
+        }
+    }
+}
+
 // Generate indentation
 fn indent(size: usize) -> String {
     const INDENT: &'static str = "    ";
